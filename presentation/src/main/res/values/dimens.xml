@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="query_bar_full_size">82dp</dimen>
+</resources>
