@@ -1,7 +1,6 @@
 package com.eva.presentation.home
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.eva.domain.RequestState
@@ -28,11 +27,11 @@ class HomeViewModel @Inject constructor(
     private val imageUrlsLD =
         queryStateFlow
             .transformLatest <String, RequestState<List<ImageData>>> { value ->
-                val flow = loadImagesDataUC.invoke(QuerySize, value)
+                val imagesDataFlow = loadImagesDataUC.invoke(QuerySize, value)
 
                 coroutineScope {
                     while (this@coroutineScope.isActive) {
-                        flow.collect { request ->
+                        imagesDataFlow.collect { request ->
                             emit(request)
                             when(request) {
                                 is RequestState.Success -> {
@@ -61,9 +60,14 @@ class HomeViewModel @Inject constructor(
         imageUrlsLD.observe(lo, observer)
     }
 
-    fun subscribeToImageUrls(lo: LifecycleOwner, observer: (List<ImageData>)->Unit) {
-        imageUrlsLD.observe(lo) {
-            if (it is RequestState.Success) observer(it.result)
+    fun subscribeToImageUrls(lo: LifecycleOwner, observer: (List<HomeItem>)->Unit) {
+        imageUrlsLD.observe(lo) { request->
+            if (request is RequestState.Success) {
+                observer(request.result.map { HomeItem.ActualItem(it) })
+            } else {
+                observer(HomeItem.DefaultPlaceholderList)
+            }
+
         }
     }
 

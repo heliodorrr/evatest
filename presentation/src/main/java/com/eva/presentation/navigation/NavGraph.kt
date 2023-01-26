@@ -9,7 +9,11 @@ import com.eva.domain.model.ImageData
 import com.eva.presentation.details.DetailsFragment
 import com.eva.presentation.home.HomeFragment
 
-fun NavController.mainGraph() = createGraph(NavRoutes.Home.Route) {
+fun applyMainNavGraph(controller: NavController) {
+    controller.graph = controller.createGraph()
+}
+
+private fun NavController.createGraph() = createGraph(NavRoutes.Home.Route) {
     fragment<HomeFragment>(NavRoutes.Home.Route) {
 
     }

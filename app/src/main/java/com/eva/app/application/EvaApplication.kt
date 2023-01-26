@@ -3,9 +3,6 @@ package com.eva.app.application
 import android.app.Application
 import com.eva.app.di.DaggerAppComponent
 import com.eva.presentation.di.MainComponent
-import dagger.android.AndroidInjector
-import dagger.android.HasAndroidInjector
-import javax.inject.Inject
 
 class EvaApplication : Application(), MainComponent.Provider {
 

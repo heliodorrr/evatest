@@ -2,27 +2,26 @@ package com.eva.presentation.home
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.ViewCompat
 import androidx.core.widget.doOnTextChanged
-import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.AnimBuilder
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.eva.domain.RequestState
 import com.eva.domain.model.ImageData
-
+import com.eva.presentation.animation.defaultAnimations
 import com.eva.presentation.base.InjectableFragment
 import com.eva.presentation.databinding.FragmentHomeBinding
-import com.eva.presentation.details.DetailsFragment
 import com.eva.presentation.details.DetailsViewModel
 import com.eva.presentation.home.adapter.attachFeedRecycler
 import com.eva.presentation.navigation.NavRoutes
 import com.eva.presentation.utils.Shimmers
+import com.eva.presentation.utils.setCanScroll
+
 import kotlin.reflect.KClass
 
 class HomeFragment : InjectableFragment<FragmentHomeBinding>() {
 
     companion object {
-        const val SharedImage = "home_fragment_shared_image"
     }
 
     override val bindingClass: KClass<FragmentHomeBinding> get() = FragmentHomeBinding::class
@@ -41,15 +40,9 @@ class HomeFragment : InjectableFragment<FragmentHomeBinding>() {
         val navigationLambda = { imageData: ImageData, view: View ->
             detailsViewModel.setImageData(imageData)
 
-            ViewCompat.setTransitionName(view, SharedImage)
-
             findNavController().navigate(
                 NavRoutes.Details.Route,
-                navOptions {
-                    launchSingleTop = false
-                    //this.restoreState
-                },
-                FragmentNavigatorExtras(view to DetailsFragment.SharedImage)
+                navOptions { anim(AnimBuilder::defaultAnimations) },
             )
         }
 
@@ -62,8 +55,15 @@ class HomeFragment : InjectableFragment<FragmentHomeBinding>() {
 
             homeViewModel.subscribeToRequestEvents(this@HomeFragment) {
                 when(it) {
-                    is RequestState.Success -> hideShimmer()
-                    else -> showShimmer(true)
+                    is RequestState.Success -> {
+                        hideShimmer()
+                        binding.homeRecycler.setCanScroll(true)
+                    }
+                    else -> {
+                        binding.homeRecycler.scrollToPosition(0)
+                        binding.homeRecycler.setCanScroll(false)
+                        showShimmer(true)
+                    }
                 }
             }
         }
@@ -71,7 +71,7 @@ class HomeFragment : InjectableFragment<FragmentHomeBinding>() {
     }
 
     private fun setupQuery() {
-        binding.feedQueryTf.doOnTextChanged { text, start, before, count ->
+        binding.feedQueryTf.doOnTextChanged { text, _, _, _ ->
             homeViewModel.emitQuery(text.toString())
         }
     }

@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.media.Image
 import android.text.method.TextKeyListener.clear
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,8 @@ import com.eva.domain.utils.fastlog
 import com.eva.presentation.R
 
 import com.eva.presentation.databinding.ImageVhBinding
+import com.eva.presentation.home.HomeItem
+import com.eva.presentation.utils.GridLayoutManagerWithDisabler
 import com.eva.presentation.utils.Shimmers
 import com.eva.presentation.utils.addSimpleListener
 import com.google.android.flexbox.AlignItems
@@ -42,20 +45,21 @@ import java.util.concurrent.atomic.AtomicInteger
 fun attachFeedRecycler(
     recycler: RecyclerView,
     navigationLambda: (ImageData, View) -> Unit,
-    subscriber: ((List<ImageData>)->Unit)->Unit,
+    subscriber: ((List<HomeItem>)->Unit)->Unit,
 ) {
     attachFeedAdapter(recycler, subscriber, navigationLambda)
     attachLayoutManager(recycler)
     decorateRecycler(recycler)
 }
+
 private fun attachFeedAdapter(
     recycler: RecyclerView,
-    subscriber: ((List<ImageData>) -> Unit) -> Unit,
+    subscriber: ((List<HomeItem>) -> Unit) -> Unit,
     navigationLambda: (ImageData, View) -> Unit
 ) {
 
     val delegate = delegate(recycler, navigationLambda)
-    val adapter = ListDelegationAdapter<List<ImageData>>(delegate)
+    val adapter = ListDelegationAdapter<List<HomeItem>>(delegate)
 
 
     subscriber {
@@ -69,39 +73,57 @@ private fun attachFeedAdapter(
 private fun delegate(
     recycler: RecyclerView,
     navigationLambda: (ImageData, View) -> Unit
-): AdapterDelegate<List<ImageData>> {
+): AdapterDelegate<List<HomeItem>> {
 
     val placeholder = ColorDrawable(Color.BLACK)
 
-    return adapterDelegateViewBinding<ImageData, ImageData, ImageVhBinding>(
+    return adapterDelegateViewBinding<HomeItem, HomeItem, ImageVhBinding>(
         viewBinding = { i, vg ->
             ImageVhBinding.inflate(i, vg, false)
         }
 
     ) {
+
         binding.feedShimmer.setShimmer(Shimmers.DefaultShimmer)
-        binding.feedImageview.setOnClickListener { navigationLambda(item, binding.feedImageview) }
+        binding.feedImageview.setOnClickListener {
+            val item = item
+            if (item is HomeItem.ActualItem) {
+                navigationLambda(item.value, binding.feedImageview)
+            }
+
+        }
 
         bind {
-            binding.feedShimmer.showShimmer(true)
+            when(val item = item) {
+                is HomeItem.ActualItem -> {
+                    val imageData = item.value
+                    binding.feedShimmer.showShimmer(true)
 
-            Glide.with(context)
-                .asDrawable()
-                .placeholder(placeholder)
-                .override(Target.SIZE_ORIGINAL)
-                .load(item.url)
-                .addSimpleListener {
-                    binding.feedShimmer.hideShimmer()
-                    return@addSimpleListener false
+                    Glide.with(context)
+                        .asDrawable()
+                        .placeholder(placeholder)
+                        .override(Target.SIZE_ORIGINAL)
+                        .load(imageData.url)
+                        .addSimpleListener {
+                            binding.feedShimmer.hideShimmer()
+                            return@addSimpleListener false
+                        }
+                        .into(binding.feedImageview)
                 }
-                .into(binding.feedImageview)
+                is HomeItem.Placeholder -> {
+                    binding.feedImageview.setImageDrawable(placeholder)
+                    binding.feedShimmer.showShimmer(true)
+                }
+            }
+
+
 
         }
     }
 }
 
 private fun attachLayoutManager(recycler: RecyclerView) {
-    val lm = GridLayoutManager(recycler.context, RecyclerView.VERTICAL)
+    val lm = GridLayoutManagerWithDisabler(recycler.context, RecyclerView.VERTICAL)
     lm.spanCount = 2
 
     recycler.layoutManager = lm

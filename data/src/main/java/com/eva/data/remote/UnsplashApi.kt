@@ -1,6 +1,6 @@
 package com.eva.data.remote
 
-import com.eva.data.ImageDataDto
+import com.eva.data.model.ImageDataDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 

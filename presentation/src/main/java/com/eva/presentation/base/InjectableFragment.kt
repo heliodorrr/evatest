@@ -1,7 +1,6 @@
 package com.eva.presentation.base
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,10 +12,8 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.navGraphViewModels
 import androidx.viewbinding.ViewBinding
-import com.eva.domain.utils.TAG
 import com.eva.presentation.di.MainComponent
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 import kotlin.reflect.full.staticFunctions
 
 

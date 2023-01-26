@@ -1,9 +1,11 @@
 package com.eva.domain.utils
 
 import android.util.Log
+import kotlin.reflect.KClass
 
-val Any.TAG: String get() {
-    return this::class.simpleName ?: this::class.toString()
+
+val KClass<*>.TAG: String get() {
+    return this.simpleName ?: this.toString()
 }
 
 fun Throwable.debugInfo(showStackTrace: Boolean = false): String = buildString {

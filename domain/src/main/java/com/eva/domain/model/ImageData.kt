@@ -11,5 +11,4 @@ data class ImageData(
     val date: String,
     val likes: Int,
     val blurHash: String,
-    val isFavorite: Boolean
 ): Parcelable

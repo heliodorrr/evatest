@@ -1,8 +1,6 @@
-package com.eva.data
+package com.eva.data.model
 
-import android.graphics.Point
-import com.eva.domain.model.ImageData
-import com.eva.domain.utils.fastlog
+import android.util.Log
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -12,13 +10,17 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class ImageDataDeserializer : JsonDeserializer<List<ImageDataDto>> {
+
+    companion object {
+        private val TAG = ImageDataDeserializer::class.simpleName
+    }
+
+
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
         context: JsonDeserializationContext?
     ): List<ImageDataDto> {
-
-        fastlog("DESERIALIZER")
 
         return buildList<ImageDataDto> {
             json?.asJsonArray?.forEach {
@@ -26,7 +28,7 @@ class ImageDataDeserializer : JsonDeserializer<List<ImageDataDto>> {
                     try {
                         add(deserializeImageData(it.asJsonObject))
                     } catch (e: IllegalStateException) {
-                        fastlog("json object is dropped because of: \n${e.message}")
+                        Log.d(TAG, "json object is dropped because of: \n${e.message}")
                     }
 
                 }
@@ -56,8 +58,6 @@ class ImageDataDeserializer : JsonDeserializer<List<ImageDataDto>> {
 
         val date = calculateDate(dateStamp)
 
-        fastlog("DESERIALIZER id is $id")
-
         return ImageDataDto(
             imageId = id,
             url = url,
@@ -71,7 +71,7 @@ class ImageDataDeserializer : JsonDeserializer<List<ImageDataDto>> {
     private fun calculateDate(timestamp: String): String {
         val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
         val ldt = LocalDateTime.parse(timestamp, dateTimeFormatter)
-        return "${ldt.year}.${ldt.month}.${ldt.dayOfMonth}"
+        return "${ldt.year}.${ldt.month.value}.${ldt.dayOfMonth}"
     }
 
 

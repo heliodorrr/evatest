@@ -13,6 +13,9 @@ import javax.inject.Inject
 class LoadImagesDataUC @Inject constructor(
     private val repository: ImagesRepository
 ) {
+    companion object {
+        private val TAG = LoadImagesDataUC::class.TAG
+    }
     
     fun invoke(count: Int, query: String): Flow<RequestState<List<ImageData>>> = flow {
         emit(RequestState.Loading)
@@ -20,7 +23,7 @@ class LoadImagesDataUC @Inject constructor(
             emit(RequestState.Success(repository.loadImages(count, query)))
         } catch (t: Throwable) {
             emit(RequestState.Error(t))
-            Log.d(this@LoadImagesDataUC.TAG, t.debugInfo(showStackTrace = true))
+            Log.d(TAG, t.debugInfo(showStackTrace = true))
         }
     }
 

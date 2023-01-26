@@ -2,9 +2,9 @@ package com.eva.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.eva.data.ImageDataDeserializer
-import com.eva.data.ImageDataDto
-import com.eva.data.local.FavoriteImagesBatchDao
+import com.eva.data.model.ImageDataDeserializer
+import com.eva.data.model.ImageDataDto
+import com.eva.data.local.FavoriteImagesDao
 import com.eva.data.local.LocalDatabase
 import com.eva.data.remote.UnsplashApi
 import com.google.gson.GsonBuilder
@@ -48,7 +48,7 @@ class DataLayerImplModule {
 
     @Provides
     @Singleton
-    fun provideFavoriteImagesBatchDao(db: LocalDatabase): FavoriteImagesBatchDao {
+    fun provideFavoriteImagesBatchDao(db: LocalDatabase): FavoriteImagesDao {
         return db.batchDao()
     }
 

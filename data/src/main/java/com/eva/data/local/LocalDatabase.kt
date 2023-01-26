@@ -8,5 +8,5 @@ import com.eva.data.model.Favorite
     entities = [Favorite::class], version = 1
 )
 abstract class LocalDatabase: RoomDatabase() {
-    abstract fun batchDao(): FavoriteImagesBatchDao
+    abstract fun batchDao(): FavoriteImagesDao
 }

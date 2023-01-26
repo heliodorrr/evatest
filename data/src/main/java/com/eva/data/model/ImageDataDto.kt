@@ -1,4 +1,4 @@
-package com.eva.data
+package com.eva.data.model
 
 import com.eva.domain.model.ImageData
 
@@ -9,9 +9,8 @@ data class ImageDataDto(
     val date: String,
     val likes: Int,
     val blurHash: String,
-    //val isFavorite: Boolean
 ){
-    fun toImageData(isFavorite: Boolean)
+    fun toImageData()
     = ImageData(
         id = imageId,
         username = username,
@@ -19,6 +18,5 @@ data class ImageDataDto(
         date = date,
         likes = likes,
         blurHash = blurHash,
-        isFavorite = isFavorite
     )
 }
