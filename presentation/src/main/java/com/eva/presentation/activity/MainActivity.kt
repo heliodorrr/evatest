@@ -11,7 +11,6 @@ import com.eva.presentation.navigation.applyMainNavGraph
 
 class MainActivity : AppCompatActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
